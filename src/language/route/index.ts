@@ -1,0 +1,10 @@
+export { default as ClientLanguageRoute } from "./clientLang.route";
+export { default as LanguageRoute } from "./language.route";
+import express from "express";
+import ClientLanguageRoute from "./clientLang.route";
+import LanguageRoute from "./language.route";
+const baseEndpoint = "/language";
+const CommonLanguageRoute = express.Router();
+CommonLanguageRoute.use(baseEndpoint,ClientLanguageRoute);
+CommonLanguageRoute.use(baseEndpoint,LanguageRoute);
+export { CommonLanguageRoute };

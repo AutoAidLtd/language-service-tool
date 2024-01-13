@@ -1,0 +1,10 @@
+[
+  {
+    "label": "Client Language",
+    "value": "client_lang"
+  },
+  {
+    "label": "Server Language",
+    "value": "server_lang"
+  }
+]

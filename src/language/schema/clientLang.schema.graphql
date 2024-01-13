@@ -1,0 +1,8 @@
+type ClientLanguageGqlSchema {
+    _id: String
+    key: String
+    menu: String
+    value:{
+        [local: String] : String
+    }
+}
