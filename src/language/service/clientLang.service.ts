@@ -41,4 +41,10 @@ export const clientLangService = {
     const result = await ClientLanguageModel.deleteOne({ _id: id });
     return result;
   },
+  exportCsv : async(languages:string[])=>{
+    const result = await ClientLanguageModel.find(); 
+  },
+  countAll :async()=>{
+    return await ClientLanguageModel.count();
+  }
 };

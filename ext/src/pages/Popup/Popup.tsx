@@ -16,12 +16,15 @@ import useInit from './hooks/useInit';
 import View from './View';
 import Write from './Write';
 import { RefreshOutlined } from '@mui/icons-material';
-type Mode = 'view' | 'create' | 'update';
+import Export from './Export';
+type Mode = 'view' | 'create' | 'update' | 'export';
+
 const Popup = () => {
   const [mode, setMode] = useState<Mode>('view');
   const { types } = useInit();
   const [tab, setTab] = useState<any>('client_lang');
   const [editItem, setEditItem] = useState(null);
+  
   useEffect(() => {
     if (types && types[0]) {
       console.log(types[0]?.value);
@@ -61,10 +64,8 @@ const Popup = () => {
       </Tabs>
       <Box display="flex" justifyContent="flex-end" gap={2} margin={'1rem'}>
         <Button
-          sx={{
-            marginLeft: 'auto',
-          }}
-          color="secondary"
+         
+          color="primary"
           variant="contained"
           onClick={() => {
             setMode('create');
@@ -72,15 +73,25 @@ const Popup = () => {
         >
           Add
         </Button>
+        <Button
+          color="secondary"
+          variant="contained"
+          onClick={() => {
+            setMode('export');
+          }}
+        >
+          Export
+        </Button>
       </Box>
-      {mode === 'view' ? (
+      {mode === 'view' && (
         <View
           onSelectEdit={(item) => {
             setEditItem(item);
             setMode('update');
           }}
         />
-      ) : (
+      ) }
+      {mode === 'create' && (
         <Write
           init={editItem}
           backHandle={() => {
@@ -91,6 +102,14 @@ const Popup = () => {
             setEditItem(null);
             setMode('view');
           }}
+        />
+      )}
+      {mode === 'export' && (
+        <Export
+        backHandle={() => {
+          setMode('view');
+          setEditItem(null);
+        }}
         />
       )}
       <Box

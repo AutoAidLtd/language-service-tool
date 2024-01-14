@@ -6,4 +6,5 @@ ClientLanguageRoute.get(basePath, ClientLanguageController.getAll);
 ClientLanguageRoute.post(basePath, ClientLanguageController.createLanguage);
 ClientLanguageRoute.put(basePath, ClientLanguageController.updateLanguage);
 ClientLanguageRoute.delete(basePath, ClientLanguageController.deleteLanguage);
+ClientLanguageRoute.get(basePath+"/export", ClientLanguageController.exportLanguage);
 export default ClientLanguageRoute;

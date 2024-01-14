@@ -2,6 +2,9 @@ import {
   Box,
   Button,
   IconButton,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
   Table,
   TextField,
   Typography,
@@ -14,23 +17,46 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { doFetch } from './util';
 import { ChevronLeft } from '@mui/icons-material';
+import langList from './lang.json';
 type Props = {
   init?: any;
   reloadHandle: () => void;
   backHandle: () => void;
 };
-
+const translatePath = 'https://translate.wyvernp.id.vn';
 const Write = ({ init, backHandle, reloadHandle }: Props) => {
   const mode: 'UPDATE' | 'WRITE' = useMemo(() => {
     return !!init ? 'UPDATE' : 'WRITE';
   }, [init]);
   const [list, setList] = useState<any[]>([]);
   const [key, setKey] = useState<string>();
-  const [menu, setMenu] = useState<string>();
+  const [menu, setMenu] = useState<string>('common');
   const [errMsg, setMsg] = useState<string | null>();
+  const [supportLanguage, setSupportLanguage] = useState<string[]>([]);
+  // const [lang, setLang] = React.useState('en');
+
+  // const handleChange = (event: SelectChangeEvent) => {
+  //   setLang(event.target.value);
+  // };
   useEffect(() => {
     console.log(list);
   }, [list]);
+  useEffect(() => {
+    fetch(translatePath + '/languages', {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((rawRes) => rawRes.json())
+      .then((data: any[]) => {
+        const fromEnglishList = data.find((d) => d.code === 'en');
+        console.log('GET SUPPORT LANGUAGES', { fromEnglishList });
+        if (!!fromEnglishList) {
+          setSupportLanguage(fromEnglishList?.targets ?? []);
+        }
+      });
+  }, []);
   useEffect(() => {
     if (!!init && mode === 'UPDATE') {
       setMenu(init?.menu);
@@ -112,7 +138,7 @@ const Write = ({ init, backHandle, reloadHandle }: Props) => {
       </Box>
       <Button
         onClick={() => {
-          setList([...list, { locale: '', value: '' }]);
+          setList([...list, { locale: 'en', value: '' }]);
         }}
       >
         Add Locale Value
@@ -146,21 +172,29 @@ const Write = ({ init, backHandle, reloadHandle }: Props) => {
                 >
                   {i + 1}
                 </TableCell>
-                <TableCell
-                  align="center"
-                  // onBlur={(e) => {
-                  //   console.log(e.target.innerText);
-                  //   setList(
-                  //     list.map((item, index) => {
-                  //       if (index === i) {
-                  //         return { ...list[i], locale: e.target.innerText };
-                  //       }
-                  //       return item;
-                  //     })
-                  //   );
-                  // }}
-                  // contentEditable
-                >
+                <TableCell align="center">
+                  <Select
+                    labelId="demo-simple-select-standard-label"
+                    id="demo-simple-select-standard"
+                    value={row?.locale ?? 'en'}
+                    onChange={(e) => {
+                      setList(
+                        list.map((item, index) => {
+                          if (index === i) {
+                            return { ...list[i], locale: e.target.value };
+                          }
+                          return item;
+                        })
+                      );
+                    }}
+                    label=""
+                  >
+                    {Object.keys(langList).map((key) => (
+                      <MenuItem value={key}>
+                        {langList[key as keyof typeof langList]}
+                      </MenuItem>
+                    ))}
+                  </Select>
                   {/* {row.locale} */}
                 </TableCell>
                 <TableCell
@@ -180,6 +214,52 @@ const Write = ({ init, backHandle, reloadHandle }: Props) => {
                 >
                   {row.value}
                 </TableCell>
+                <Button
+                  onClick={async () => {
+                    const enLang = list.find((l) => l.locale === 'en');
+                    if (!!enLang) {
+                      if (!supportLanguage.includes(row.locale)) {
+                        setMsg('Language not support auto translate yet');
+                      }
+                      const body = {
+                        q: enLang.value,
+                        source: 'en',
+                        target: row.locale,
+                        format: 'text',
+                      };
+                      const translateResult = await fetch(
+                        'https://translate.wyvernp.id.vn/translate',
+                        {
+                          method: 'post',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify(body),
+                        }
+                      ).then((data) => data.json());
+                      console.log('Translate Result ', { translateResult });
+                      if (!!translateResult) {
+                        setList(
+                          list.map((item, index) => {
+                            if (index === i) {
+                              return {
+                                ...list[i],
+                                value: translateResult?.translatedText,
+                              };
+                            }
+                            return item;
+                          })
+                        );
+                      }else {
+                        setMsg('Auto translate failed');
+                      }
+                    } else {
+                      setMsg('Define english for key to use auto translate');
+                    }
+                  }}
+                >
+                  Auto
+                </Button>
               </TableRow>
             ))}
           </TableBody>

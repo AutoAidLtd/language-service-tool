@@ -5,13 +5,13 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 8080:8080
+      - 4551:4551
     depends_on:
       - mongodb
   mongodb:
     image: mongo
     ports:
-      - 27017:27017
+      - 27015:27017
     volumes:
       - mongodb_data:/data/db
 volumes:

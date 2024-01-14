@@ -7,4 +7,5 @@ const basePath = "";
  ClientLanguageRoute.get("/",(req,res,next)=>{
     res.send("Nice demo")
  })
+ 
 export default ClientLanguageRoute;

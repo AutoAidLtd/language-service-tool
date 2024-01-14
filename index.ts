@@ -27,12 +27,12 @@ dotenv.config({
   await apolloServer.start(); */
 
   mongoose
-    .connect("mongodb+srv://wyvernp:WyvernP2506@coalition-lang.5wjkafv.mongodb.net/?retryWrites=true&w=majority", { dbName: "coalition-lang" })
+    .connect("mongodb://mongodb:27017/?retryWrites=true&w=majority", { dbName: "coalition-lang" })
     .then(() => {
       console.log("mongodb connection established");
 
-      httpServer.listen(5551, () => {
-        console.log("app is listening at http://localhost:5551");
+      httpServer.listen(4551, () => {
+        console.log("app is listening at http://localhost:4551");
       });
     })
     .catch((err) => console.log("mongodb connection error: " + err.message));

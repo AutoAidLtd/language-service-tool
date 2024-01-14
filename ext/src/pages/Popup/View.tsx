@@ -106,16 +106,19 @@ const View = ({ onCardClick, onSelectEdit }: Props) => {
                   <Box display={'flex'}>
                     <IconButton
                       onClick={() => {
+                        if(window.confirm("Delete this row of language ? ")){
+
                         doFetch('/client_language?id=' + row._id, {
                           method: 'delete',
                         }).then((data) => {
-                          if (data.status == 'success') {
-                            doFetch('/client_language', {
-                              method: 'get',
-                            }).then((val) => setList(val.data));
+                          if (data.status === 'success') {
+                            getListWord()
                           }
                         });
-                      }}
+                      }
+                    }
+
+                    }
                     >
                       <DeleteIcon />
                     </IconButton>
